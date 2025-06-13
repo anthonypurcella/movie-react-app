@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Search from "./components/search";
 import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
+import { useDebounce } from "react-use";
 
 // Set base url of API
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -29,6 +30,11 @@ const App = () => {
 
   //Sets Loading state
   const [isLoading, setIsLoading] = useState(false);
+
+  //Debounce to allow API request to send after user is done typing
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
 
   //Fetch movies from API - async to allow time for API
   const fetchMovies = async (query = '') => {
@@ -63,8 +69,8 @@ const App = () => {
   };
   //Run Function at page load
   useEffect(() => {
-    fetchMovies(searchTerm);
-  }, [searchTerm]);
+    fetchMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
   return (
     <main>
